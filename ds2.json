@@ -1,0 +1,154 @@
+{
+    "database_name": "ds2",
+    "dialect": "POSTGRESQL",
+    "schemas": [
+        {
+            "schema_name": "public",
+            "tables": [
+                {
+                    "table_name": "categories",
+                    "description": "Danh mục thể loại sản phẩm. thể loại sản phẩm của cửa tiệm này chính là thể loại phim",
+                    "columns": [
+                        {"name": "category", "type": "integer", "description": "mã định danh thể loại sản phẩm"},
+                        {"name": "categoryname", "type": "character varying (50)", "description": "tên cụ thể của loại sản phẩm"}
+                    ],
+                    "primary_key": ["category"],
+                    "foreign_key": []
+                },
+                {
+                    "table_name": "cust_hist",
+                    "description": "Bảng lưu trữ lịch sử giao dịch khách hàng, bao gồm mã định danh của khách hàng, mã đơn đặt hàng, mã định danh sản phẩm",
+                    "columns": [
+                        {"name": "customerid", "type": "integer", "description": "mã định danh khách hàng"},
+                        {"name": "orderid", "type": "integer", "description": "mã đơn đặt hàng"},
+                        {"name": "prod_id", "type": "integer", "description": "mã định danh sản phẩm"}
+                    ],
+                    "primary_key": [],
+                    "foreign_key": ["customerid"]
+                },
+                {
+                    "table_name": "customers",
+                    "description": "Thông tin khách hàng",
+                    "columns": [
+                        {"name": "customerid", "type": "integer", "description": "mã định danh khách hàng"},
+                        {"name": "firstname", "type": "character varying (50)", "description": "tên của khách hàng"},
+                        {"name": "lastname", "type": "character varying (50)", "description": "họ của khách hàng"},
+                        {"name": "address1", "type": "character varying (50)", "description": "địa chỉ đầu tiên"},
+                        {"name": "address2", "type": "character varying (50)", "description": "địa chỉ thứ hai (tuỳ chọn)"},
+                        {"name": "city", "type": "character varying (50)", "description": "tên thành phố"},
+                        {"name": "state", "type": "character varying (50)", "description": "mã tiểu bang hoặc tỉnh thành"},
+                        {"name": "zip", "type": "integer", "description": "mã bưu chính hoặc mã zip của địa chỉ"},
+                        {"name": "country", "type": "character varying (50)", "description": "tên quốc gia"},
+                        {"name": "region", "type": "smallint", "description": "mã định danh vùng"},
+                        {"name": "email", "type": "character varying (50)", "description": "địa chỉ email khách hàng"},
+                        {"name": "phone", "type": "character varying (50)", "description": "số điện thoại khách hàng"},
+                        {"name": "creditcardtype", "type": "integer", "description": "loại thẻ tín dụng"},
+                        {"name": "creditcard", "type": "character varying (50)", "description": "số thẻ tín dụng"},
+                        {"name": "creditcardexpiration", "type": "character varying (50)", "description": "ngày hết hạn thẻ tín dụng. cấu trúc là 'YEAR/MONTH', ví dụ: '2016/03' "},
+                        {"name": "username", "type": "character varying (50)", "description": "tên tài khoản đăng nhập"},
+                        {"name": "password", "type": "character varying (50)", "description": "mật khẩu tài khoản"},
+                        {"name": "age", "type": "smallint", "description": "tuổi khách hàng"},
+                        {"name": "income", "type": "integer", "description": "thu nhập của khách hàng"},
+                        {"name": "gender", "type": "character varying (1)", "description": "giới tính khách hàng, có 2 giới tính là nam và nữ",
+                            "value": {"M":"giới tính nam" , "F":"giới tính nữ"}
+                        }
+                    ],
+                    "primary_key": ["customerid"],
+                    "foreign_key": []
+                    ,"business_logic":["đơn vị tiền tệ được sử dụng trong cột 'income' là 'USD' "]
+                },
+                {
+                    "table_name": "inventory",
+                    "description": "thông tin hàng tồn kho",
+                    "columns": [
+                        {"name": "prod_id", "type": "integer", "description": "mã định danh sản phẩm"},
+                        {"name": "quan_in_stock", "type": "integer", "description": "số lượng sản phẩm tồn kho"},
+                        {"name": "sales", "type": "integer", "description": "số lượng sản phẩm đã bán"}
+                    ],
+                    "primary_key": ["prod_id"],
+                    "foreign_key": []
+                },
+                {
+                    "table_name": "orderlines",
+                    "description": "bảng thông tin chi tiết các mặt hàng trong từng hoá đơn đặt hàng",
+                    "columns": [
+                        {"name": "orderlineid", "type": "smallint", "description": "mã định danh thông tin chi tiết các mặt hàng trong từng hoá đơn đặt hàng"},
+                        {"name": "orderid", "type": "integer", "description": "mã định danh đơn đặt hàng"},
+                        {"name": "prod_id", "type": "integer", "description": "mã định danh sản phẩm"},
+                        {"name": "quantity", "type": "smallint", "description": "số lượng sản phẩm trong đơn hàng"},
+                        {"name": "orderdate", "type": "date", "description": "ngày đặt hàng. cấu trúc là 'YEAR-MONTH-DAY', ví dụ: '2009-01-27' "}
+                    ],
+                    "primary_key": [],
+                    "foreign_key": ["orderid"]
+                    ,"business_logic":["đơn vị tiền tệ được sử dụng trong cột 'quantity' là 'USD' "]
+                },
+                {
+                    "table_name": "orders",
+                    "description": "Thông tin hóa đơn đặt hàng",
+                    "columns": [
+                        {"name": "orderid", "type": "integer", "description": "mã đơn đặt hàng"},
+                        {"name": "orderdate", "type": "date", "description": "ngày đặt hàng. cấu trúc là 'YEAR-MONTH-DAY', ví dụ: '2009-01-27' "},
+                        {"name": "customerid", "type": "integer", "description": "mã định danh khách hàng"},
+                        {"name": "netamount", "type": "numeric", "description": "tổng tiền chưa bao gồm thuế của đơn hàng"},
+                        {"name": "tax", "type": "numeric", "description": "số tiền thuế"},
+                        {"name": "totalamount", "type": "numeric", "description": "tổng tiền của đơn hàng (bao gồm thuế)"}
+                    ],
+                    "primary_key": ["orderid"],
+                    "foreign_key": ["customerid"]
+                    ,"business_logic":[
+                        "đơn vị tiền tệ được sử dụng trong cột 'netamount','tax','totalamount' là 'USD' ", 
+                        " cột 'totalamount' là tổng của 2 cột 'tax' và 'netamount' "]
+                },
+                {
+                    "table_name": "products",
+                    "description": "Thông tin chi tiết sản phẩm. Các sản phẩm ở đây là đĩa phim kĩ thuật số (dvd).",
+                    "columns": [
+                        {"name": "prod_id", "type": "integer", "description": "mã định danh sản phẩm"},
+                        {"name": "category", "type": "smallint", "description": "mã định danh thể loại sản phẩm"},
+                        {"name": "title", "type": "text", "description": "tên sản phẩm"},
+                        {"name": "actor", "type": "text", "description": "tên diễn viên"},
+                        {"name": "price", "type": "numeric", "description": "giá bán sản phẩm"},
+                        {"name": "special", "type": "smallint", "description": "là cột đánh dấu các sản phẩm đặc biệt, với giá trị '0' là sản phẩm bình thường còn giá trị '0' là sản phẩm đặc biệt.",
+                            "value": {"0":"bình thường" , "1":"đặc biệt"}},
+                        {"name": "common_prod_id", "type": "integer", "description": "mã định danh sản phẩm chung"}
+                    ],
+                    "primary_key": ["prod_id"],
+                    "foreign_key": []
+                    ,"business_logic":["đơn vị tiền tệ được sử dụng trong cột 'price' là 'USD' "]
+                }
+            ]
+        }
+    ],
+    "relations": [
+        {
+            "source_schema": "public","source_table": "customers","source_column": "customerid",
+            "target_schema": "public","target_table": "cust_hist","target_column": "customerid",
+            "relations_type": "one to many"
+        },
+        {
+            "source_schema": "public", "source_table": "customers", "source_column": "customerid",
+            "target_schema": "public","target_table": "orders","target_column": "customerid",
+            "relations_type": "one to many"
+        },
+        {
+            "source_schema": "public","source_table": "orders","source_column": "orderid",
+            "target_schema": "public","target_table": "orderlines","target_column": "orderid",
+            "relations_type": "one to many"
+        },
+        {
+            "source_schema": "public","source_table": "products", "source_column": "prod_id",
+            "target_schema": "public","target_table": "orderlines","target_column": "prod_id",
+            "relations_type": "one to many"
+        },
+        {
+            "source_schema": "public","source_table": "products","source_column": "prod_id",
+            "target_schema": "public","target_table": "inventory","target_column": "prod_id",
+            "relations_type": "one to one"
+        },
+        {
+            "source_schema": "public", "source_table": "categories", "source_column": "castegory",
+            "target_schema": "public","target_table": "products","target_column": "castegory",
+            "relations_type": "one to many"
+        }
+    ]
+}
