@@ -57,8 +57,8 @@ class SQLGenerator:
             "Your task is to accurately translate a user's natural language question into a working SQL query using the provided database schema.\n"
             "Rules to follow:\n"
             "1. Use the 'Grounded Schema' to pinpoint exactly which tables and columns are relevant before logic planning.\n"
-            "2. Formulate explicitly clear 'Logical Steps' mapping the problem to SQL mechanics.\n"
-            "3. Output the final working SQLite query."
+            "2. Think step-by-step to construct the SQL query logically.\n"
+            "3. Output the final working SQLite query.\n\n"
         )
 
     def generate(self, question: str, schema_summary: str):
@@ -101,20 +101,3 @@ class SQLGenerator:
             "full_thought": full_response
         }
 
-# --- Demo cách sử dụng (Bạn có thể test file này trực tiếp) ---
-if __name__ == "__main__":
-    # Đường dẫn bạn đã cung cấp
-    MODEL_WEIGHTS = r"D:\code_nam_3\deep learning\final_project\module_1\finetune\Qwen2.5_Coder_3B_Instruct_adapter"
-    
-    generator = SQLGenerator(MODEL_WEIGHTS)
-    
-    # Giả sử đây là schema lấy từ Metadata class
-    sample_schema = "Table students: id, name, age\nTable classes: id, class_name, student_id\nRelationships: students.id = classes.student_id"
-    sample_question = "Liệt kê tên các học sinh trong lớp '12A1'"
-    
-    result = generator.generate(sample_question, sample_schema)
-    
-    print("\n--- KẾT QUẢ TỪ BLACK BOX ---")
-    print(f"1. Grounded Schema:\n{result['grounded_schema']}")
-    print(f"\n2. Logical Steps:\n{result['ir_steps']}")
-    print(f"\n3. Final SQL:\n{result['sql']}")

@@ -68,10 +68,11 @@ class SQLExecutor:
         return success
     
     def execute_query(self, query: str) -> Union[pd.DataFrame, str]:
+        from sqlalchemy import text
         result = "Not connected to database"
         if self.conn:
             try:
-                result = pd.read_sql(query, self.conn)
+                result = pd.read_sql(text(query), self.conn)
             except Exception as e:
                 result = f"[SQL ERROR] {e}"
         # if isinstance(result, pd.DataFrame):
