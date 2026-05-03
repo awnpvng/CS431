@@ -4,12 +4,12 @@ import json
 from dotenv import load_dotenv
 
 # Thêm đường dẫn để Python tìm thấy các module của bạn
-sys.path.append(os.path.join(os.getcwd(), "module_1"))
-sys.path.append(os.path.join(os.getcwd(), "module_2"))
+sys.path.append(os.path.join(os.getcwd(), "module_1_model"))
+sys.path.append(os.path.join(os.getcwd(), "module_1_main"))
 
-from module_1.database import Metadata
-from module_2.sql_generator import SQLGenerator
-from module_2.sql_executor import SQLExecutor, DatabaseInfor, DialectType
+from module_1_model.database import Metadata
+from module_1_main.sql_generator import SQLGenerator
+from module_1_main.sql_executor import SQLExecutor, DatabaseInfor, DialectType
 
 # --- HÀM TẠO SCHEMA SIÊU CHI TIẾT (RICH METADATA) ---
 def get_rich_schema_summary(filepath="metadata.json"):
@@ -64,7 +64,7 @@ def get_rich_schema_summary(filepath="metadata.json"):
 schema_summary, db_id = get_rich_schema_summary("metadata.json")
 
 # 1.2 Khởi tạo SQL Generator (Black Box)
-MODEL_PATH = os.path.join(os.getcwd(), "module_1", "finetune", "Qwen2.5_Coder_3B_Instruct_adapter")
+MODEL_PATH = os.path.join(os.getcwd(), "module_1_model", "finetune", "Qwen2.5_Coder_3B_Instruct_adapter")
 generator = SQLGenerator(MODEL_PATH)
 
 # 1.3 Cấu hình Database và Khởi tạo Executor (Đổi sang SQLite)
