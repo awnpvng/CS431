@@ -20,8 +20,8 @@ def main():
     embedding_model = "all-MiniLM-L6-v2"
 
     if not os.path.exists(db_path):
-        print(f"❌ Không tìm thấy database: {db_path}")
-        print("   Hãy đảm bảo file ds2.db nằm cùng thư mục.")
+        print(f"Không tìm thấy database: {db_path}")
+        print("Hãy đảm bảo file ds2.db nằm cùng thư mục.")
         return
 
     print("=" * 50)
@@ -34,9 +34,9 @@ def main():
     )
     flow2.build_index_from_db(db_path)
 
-    print(f"\n✅ Build thành công!")
-    print(f"   Index directory: {index_dir}")
-    print(f"   Total vectors: {flow2._vector_store.size}")
+    print(f"\nBuild thành công!")
+    print(f"Index directory: {index_dir}")
+    print(f"Total vectors: {flow2._vector_store.size}")
 
     # Quick test
     print("\n--- Quick Search Test ---")

@@ -291,10 +291,10 @@ if __name__ == "__main__":
     for query in test_queries:
         result = pipeline.run(query)
         print(f"\n{'─'*60}")
-        print(f"📌 Intent: {result['intent']}")
-        print(f"💬 Answer:\n{result['answer']}")
+        print(f"Intent: {result['intent']}")
+        print(f"Answer:\n{result['answer']}")
         if result.get("similar_items"):
-            print(f"\n🔍 Similar items ({len(result['similar_items'])}):")
+            print(f"\nSimilar items ({len(result['similar_items'])}):")
             for item in result["similar_items"]:
                 print(f"   - {item.title} ({item.category_name}) - ${item.price:.2f}")
         print(f"{'─'*60}\n")
