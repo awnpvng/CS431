@@ -8,3 +8,15 @@ env/
 dataset/
 data/
 *.safetensors
+
+__pycache__/
+.vscode/
+
+api_key.txt
+
+*backup*
+script/
+tests/
+
+docker-compose.yml
+.env
