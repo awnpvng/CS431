@@ -61,7 +61,6 @@ class Flow2Manager:
         Chỉ cần chạy 1 lần, sau đó dùng load_index().
         """
         import sqlite3
-        import numpy as np
 
         print("[Flow2] Đang export dữ liệu sản phẩm từ SQLite...")
 
@@ -100,8 +99,8 @@ class Flow2Manager:
             actor = actor or "Unknown"
             title = title or "Unknown"
 
-            # Composite text cho embedding: title + actor + category
-            doc_text = f"{title} | Diễn viên: {actor} | Thể loại: {cat_name}"
+            # Composite text cho embedding (Enhance description with English conversational keywords)
+            doc_text = f"A {cat_name} movie titled {title}, starring {actor}. Priced at ${price if price else 0}."
             documents.append(doc_text)
 
             metadata_list.append({
@@ -177,11 +176,9 @@ class Flow2Manager:
         # 2. Search
         raw_results = self._vector_store.search(query_vector, top_k=k)
 
-        # 3. Convert to ProductContext + Xác định relevance_reason
+        # 3. Convert to ProductContext + Xác định relevance_reason (removed custom logic, let Gemini handle it)
         product_contexts = []
         for result in raw_results:
-            reason = self._determine_relevance_reason(user_query, result)
-
             ctx = ProductContext(
                 prod_id=result.get("prod_id", 0),
                 title=result.get("title", "N/A"),
@@ -190,43 +187,8 @@ class Flow2Manager:
                 price=result.get("price", 0.0),
                 quan_in_stock=result.get("quan_in_stock", 0),
                 similarity_score=result.get("similarity_score", 0.0),
-                relevance_reason=reason,
+                relevance_reason="", # Leave empty so LLM generates the reason
             )
             product_contexts.append(ctx)
 
         return product_contexts
-
-    # =====================================================================
-    # PRIVATE HELPERS
-    # =====================================================================
-
-    def _determine_relevance_reason(self, query: str, metadata: dict) -> str:
-        """
-        Xác định lý do vì sao sản phẩm này liên quan đến query.
-        Dựa trên keyword matching đơn giản + metadata.
-        """
-        query_lower = query.lower()
-        title = (metadata.get("title") or "").lower()
-        actor = (metadata.get("actor") or "").lower()
-        category = (metadata.get("category_name") or "").lower()
-
-        reasons = []
-
-        # Kiểm tra match theo tên phim
-        query_words = set(query_lower.split())
-        title_words = set(title.split())
-        if query_words & title_words:
-            reasons.append("Tên phim trùng khớp")
-
-        # Kiểm tra match theo diễn viên
-        if any(word in actor for word in query_words if len(word) > 2):
-            reasons.append("Cùng diễn viên")
-
-        # Kiểm tra match theo thể loại
-        if any(word in category for word in query_words if len(word) > 2):
-            reasons.append("Cùng thể loại")
-
-        if not reasons:
-            reasons.append("Nội dung tương tự")
-
-        return " | ".join(reasons)

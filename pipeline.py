@@ -283,9 +283,10 @@ if __name__ == "__main__":
 
     # Test queries
     test_queries = [
-        "Tìm phim thể loại Action có giá dưới 20 đô",
-        "Diễn viên nào có doanh thu cao nhất trong thể loại Comedy?",
-        "Phim nào bán chạy nhất?",
+        "Find Action movies priced under 20 dollars.",
+        "Which actor has the highest revenue in the Comedy category?",
+        "What is the best selling movie?",
+        "I am looking for a funny movie with Jim Carrey that doesn't cost much."
     ]
 
     for query in test_queries:

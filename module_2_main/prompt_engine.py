@@ -170,20 +170,17 @@ class PromptEngine:
             if hasattr(item, "title"):
                 lines.append(
                     f"{i}. [{item.title}]\n"
-                    f"   - Diễn viên: {item.actor}\n"
-                    f"   - Thể loại: {item.category_name}\n"
-                    f"   - Giá: ${item.price:.2f}\n"
-                    f"   - Tồn kho: {item.quan_in_stock}\n"
-                    f"   - Lý do gợi ý: {item.relevance_reason}\n"
-                    f"   - Độ tương đồng: {item.similarity_score:.3f}"
+                    f"   - Actor: {item.actor}\n"
+                    f"   - Category: {item.category_name}\n"
+                    f"   - Price: ${item.price:.2f}\n"
+                    f"   - Stock: {item.quan_in_stock}\n"
                 )
             elif isinstance(item, dict):
                 lines.append(
                     f"{i}. [{item.get('title', 'N/A')}]\n"
-                    f"   - Diễn viên: {item.get('actor', 'N/A')}\n"
-                    f"   - Thể loại: {item.get('category_name', 'N/A')}\n"
-                    f"   - Giá: ${item.get('price', 0):.2f}\n"
-                    f"   - Tồn kho: {item.get('quan_in_stock', 0)}\n"
-                    f"   - Lý do: {item.get('relevance_reason', 'Tương tự')}"
+                    f"   - Actor: {item.get('actor', 'N/A')}\n"
+                    f"   - Category: {item.get('category_name', 'N/A')}\n"
+                    f"   - Price: ${item.get('price', 0):.2f}\n"
+                    f"   - Stock: {item.get('quan_in_stock', 0)}\n"
                 )
         return "\n".join(lines)

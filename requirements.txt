@@ -3,3 +3,14 @@ faiss-cpu>=1.7.0
 pandas
 numpy
 python-dotenv
+streamlit
+google-generativeai
+peft
+transformers
+trl
+datasets
+unsloth
+torch
+SQLAlchemy
+matplotlib
+tqdm
