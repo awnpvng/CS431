@@ -14,3 +14,4 @@ torch
 SQLAlchemy
 matplotlib
 tqdm
+rank-bm25

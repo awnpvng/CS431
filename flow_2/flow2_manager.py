@@ -153,7 +153,7 @@ class Flow2Manager:
             print("[Flow2] Index chưa tồn tại, đang build từ database...")
             self.build_index_from_db(db_path)
 
-    def retrieve(self, user_query: str, top_k: int = None) -> List[ProductContext]:
+    def retrieve(self, query: str, top_k: int = None) -> List[ProductContext]:
         """
         Nhận user_query → Embed → Search → Trả về List[ProductContext].
 
@@ -171,7 +171,7 @@ class Flow2Manager:
         k = top_k or self._top_k
 
         # 1. Embed query
-        query_vector = self._embedding_service.embed_query(user_query)
+        query_vector = self._embedding_service.embed_query(query)
 
         # 2. Search
         raw_results = self._vector_store.search(query_vector, top_k=k)
@@ -192,3 +192,32 @@ class Flow2Manager:
             product_contexts.append(ctx)
 
         return product_contexts
+
+    def retrieve(self, query: str, top_k: int = None) -> List[ProductContext]:
+        """
+        Thực hiện tìm kiếm ngữ nghĩa cho user_query.
+        """
+        assert self.is_index_ready(), "[Flow2] Lỗi: Vector Index chưa được load."
+
+        k = top_k or self._top_k
+        query_vector = self._embedding_service.embed_query(query)
+
+        # Chạy query truyền vào hàm search được upgrade RRF BM25
+        search_results = self._vector_store.search(query=query, query_vector=query_vector, top_k=k)
+
+        # Chuyển đổi thành domain objects
+        context_list = []
+        for res in search_results:
+            ctx = ProductContext(
+                prod_id=res["prod_id"],
+                title=res["title"],
+                actor=res["actor"],
+                category_name=res["category_name"],
+                price=res["price"],
+                quan_in_stock=res["quan_in_stock"],
+                similarity_score=res.get("rrf_score", res.get("similarity_score", 0.0)),
+                relevance_reason=f"Vector Match (Score: {res.get('rrf_score', res.get('similarity_score', 0.0)):.2f})"
+            )
+            context_list.append(ctx)
+
+        return context_list
