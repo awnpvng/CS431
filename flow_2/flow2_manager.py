@@ -61,7 +61,6 @@ class Flow2Manager:
         Chỉ cần chạy 1 lần, sau đó dùng load_index().
         """
         import sqlite3
-        import numpy as np
 
         print("[Flow2] Đang export dữ liệu sản phẩm từ SQLite...")
 
@@ -100,8 +99,8 @@ class Flow2Manager:
             actor = actor or "Unknown"
             title = title or "Unknown"
 
-            # Composite text cho embedding: title + actor + category
-            doc_text = f"{title} | Diễn viên: {actor} | Thể loại: {cat_name}"
+            # Composite text cho embedding (Enhance description with English conversational keywords)
+            doc_text = f"A {cat_name} movie titled {title}, starring {actor}. Priced at ${price if price else 0}."
             documents.append(doc_text)
 
             metadata_list.append({
@@ -154,7 +153,7 @@ class Flow2Manager:
             print("[Flow2] Index chưa tồn tại, đang build từ database...")
             self.build_index_from_db(db_path)
 
-    def retrieve(self, user_query: str, top_k: int = None) -> List[ProductContext]:
+    def retrieve(self, query: str, top_k: int = None) -> List[ProductContext]:
         """
         Nhận user_query → Embed → Search → Trả về List[ProductContext].
 
@@ -172,16 +171,14 @@ class Flow2Manager:
         k = top_k or self._top_k
 
         # 1. Embed query
-        query_vector = self._embedding_service.embed_query(user_query)
+        query_vector = self._embedding_service.embed_query(query)
 
         # 2. Search
         raw_results = self._vector_store.search(query_vector, top_k=k)
 
-        # 3. Convert to ProductContext + Xác định relevance_reason
+        # 3. Convert to ProductContext + Xác định relevance_reason (removed custom logic, let Gemini handle it)
         product_contexts = []
         for result in raw_results:
-            reason = self._determine_relevance_reason(user_query, result)
-
             ctx = ProductContext(
                 prod_id=result.get("prod_id", 0),
                 title=result.get("title", "N/A"),
@@ -190,43 +187,37 @@ class Flow2Manager:
                 price=result.get("price", 0.0),
                 quan_in_stock=result.get("quan_in_stock", 0),
                 similarity_score=result.get("similarity_score", 0.0),
-                relevance_reason=reason,
+                relevance_reason="", # Leave empty so LLM generates the reason
             )
             product_contexts.append(ctx)
 
         return product_contexts
 
-    # =====================================================================
-    # PRIVATE HELPERS
-    # =====================================================================
-
-    def _determine_relevance_reason(self, query: str, metadata: dict) -> str:
+    def retrieve(self, query: str, top_k: int = None) -> List[ProductContext]:
         """
-        Xác định lý do vì sao sản phẩm này liên quan đến query.
-        Dựa trên keyword matching đơn giản + metadata.
+        Thực hiện tìm kiếm ngữ nghĩa cho user_query.
         """
-        query_lower = query.lower()
-        title = (metadata.get("title") or "").lower()
-        actor = (metadata.get("actor") or "").lower()
-        category = (metadata.get("category_name") or "").lower()
+        assert self.is_index_ready(), "[Flow2] Lỗi: Vector Index chưa được load."
 
-        reasons = []
+        k = top_k or self._top_k
+        query_vector = self._embedding_service.embed_query(query)
 
-        # Kiểm tra match theo tên phim
-        query_words = set(query_lower.split())
-        title_words = set(title.split())
-        if query_words & title_words:
-            reasons.append("Tên phim trùng khớp")
+        # Chạy query truyền vào hàm search được upgrade RRF BM25
+        search_results = self._vector_store.search(query=query, query_vector=query_vector, top_k=k)
 
-        # Kiểm tra match theo diễn viên
-        if any(word in actor for word in query_words if len(word) > 2):
-            reasons.append("Cùng diễn viên")
+        # Chuyển đổi thành domain objects
+        context_list = []
+        for res in search_results:
+            ctx = ProductContext(
+                prod_id=res["prod_id"],
+                title=res["title"],
+                actor=res["actor"],
+                category_name=res["category_name"],
+                price=res["price"],
+                quan_in_stock=res["quan_in_stock"],
+                similarity_score=res.get("rrf_score", res.get("similarity_score", 0.0)),
+                relevance_reason=f"Vector Match (Score: {res.get('rrf_score', res.get('similarity_score', 0.0)):.2f})"
+            )
+            context_list.append(ctx)
 
-        # Kiểm tra match theo thể loại
-        if any(word in category for word in query_words if len(word) > 2):
-            reasons.append("Cùng thể loại")
-
-        if not reasons:
-            reasons.append("Nội dung tương tự")
-
-        return " | ".join(reasons)
+        return context_list
