@@ -42,23 +42,19 @@ The system is deployed as a web-based application using **Streamlit** to provide
 
 ## 7. Evaluation Results
 ### 7.1. Spider Dataset Results (Text-to-SQL Module)
-
+Based on 2,147 samples
 | Model | avg_ex | avg_esm | avg_f1 |
 | --- | --- | --- | --- |
 | Llama-3.2-3B-Instruct | 0.587 | 0.346 | 0.913 |
 | Qwen2.5-Coder-3B-Instruct | 0.578 | 0.337 | 0.914 |
 | SQLcoder-7B | 0.619 | 0.411 | 0.913 |
 | **Qwen2.5-Coder-7B-Instruct** | **0.707** | **0.448** | **0.947** |
-| <br>(Based on 2,147 samples) 
- |  |  |  |
 
 ### 7.2. DS2 Custom Testcase Results (45 Questions)
 
 | Model | avg_ex | avg_esm | avg_f1 |
 | --- | --- | --- | --- |
 | Qwen2.5-Coder-3B-Instruct | 0.422 | 0.13 | 0.873 |
-| 
- |  |  |  |
 
 ### 7.3. Metric Definitions
 * **avg_ex (Execution Accuracy):** The percentage of predicted SQL queries that produce the correct result set.
