@@ -20,6 +20,7 @@ The system functions as an **Insight Engine** with four main stages:
 2. **Module 1 (Text-to-SQL):** Translates questions into SQL queries to fetch a DataFrame .
 3. **Module Vector Search:** Performs **Hybrid RAG** (Dense + BM25) using FAISS to find the Top-K similar items .
 4. **Module 2 (Response Synthesizer):** Uses an LLM to generate a final response based on the SQL results and similar items .
+![Agentic Workflow](https://raw.githubusercontent.com/awnpvng/ChatBot_BI_Semantic-Text2SQL_Hybrid-RAG/main/Agentic_Workflow.png)
 
 ## 4. Data & Methodology
 * **Spider Dataset:** Used for training and evaluating the Text-to-SQL module independently.
